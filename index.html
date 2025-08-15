@@ -15,7 +15,7 @@
             overflow-x: hidden;
         }
         .token-feed {
-            max-height: 400px;
+            max-height: 600px; /* Increased height for more tokens */
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: #4b5e8e #1a1a2e;
@@ -225,6 +225,7 @@
             `;
             tokenFeed.prepend(tokenCard);
             gsap.from(tokenCard, { scale: 0, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' });
+            console.log(`Added token: ${tokenName}, Total tokens: ${tokenFeed.children.length}`);
         }
 
         // Add new token every 5 seconds
