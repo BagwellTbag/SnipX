@@ -15,8 +15,9 @@
             overflow-x: hidden;
         }
         .token-feed {
-            max-height: 800px; /* Increased for visibility */
+            max-height: 1000px; /* Increased for more tokens */
             overflow-y: auto;
+            overflow-anchor: none; /* Prevent auto-scroll hiding */
             scrollbar-width: thin;
             scrollbar-color: #4b5e8e #1a1a2e;
         }
@@ -35,7 +36,10 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: transform 0.3s ease;
-            min-height: 100px; /* Prevent collapse */
+            min-height: 120px; /* Prevent collapse */
+            padding: 16px;
+            visibility: visible; /* Ensure not hidden */
+            opacity: 1;
         }
         .token-card:hover {
             transform: translateY(-5px);
@@ -88,7 +92,7 @@
         <!-- Live Token Feed -->
         <section class="bg-gray-900 p-6 rounded-lg shadow-lg">
             <h2 class="text-2xl font-semibold text-white mb-4">Recently Launched Tokens</h2>
-            <div id="tokenFeed" class="token-feed grid grid-cols-1 gap-4"></div>
+            <div id="tokenFeed" class="token-feed flex flex-col gap-4"></div>
         </section>
     </main>
 
@@ -218,9 +222,9 @@
         function addNewToken() {
             const tokenName = tokenNames[Math.floor(Math.random() * tokenNames.length)];
             const secondsAgo = Math.floor(Math.random() * 60);
-            const tokenId = `token-${tokenCounter++}`; // Unique ID for tracking
+            const tokenId = `token-${Date.now()}-${tokenCounter++}`; // Unique ID with timestamp
             const tokenCard = document.createElement('div');
-            tokenCard.className = 'token-card p-4 rounded-lg pop-in';
+            tokenCard.className = 'token-card rounded-lg pop-in';
             tokenCard.setAttribute('data-id', tokenId); // Add unique ID
             tokenCard.innerHTML = `
                 <p class="text-lg font-semibold text-white">${tokenName}</p>
@@ -231,6 +235,13 @@
             gsap.from(tokenCard, { scale: 0, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' });
             console.log(`Added token: ${tokenName} (ID: ${tokenId}), Total tokens: ${tokenFeed.children.length}`);
         }
+
+        // Periodic check for token count
+        setInterval(() => {
+            console.log(`Current token count: ${tokenFeed.children.length}`);
+            const tokenIds = Array.from(tokenFeed.children).map(child => child.getAttribute('data-id'));
+            console.log(`Token IDs in DOM: ${tokenIds.join(', ')}`);
+        }, 10000); // Log every 10 seconds
 
         // Add new token every 5 seconds
         setInterval(addNewToken, 5000);
