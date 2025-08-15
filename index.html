@@ -15,7 +15,7 @@
             overflow-x: hidden;
         }
         .token-feed {
-            max-height: 600px; /* Increased height for more tokens */
+            max-height: 800px; /* Increased for visibility */
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: #4b5e8e #1a1a2e;
@@ -35,6 +35,7 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: transform 0.3s ease;
+            min-height: 100px; /* Prevent collapse */
         }
         .token-card:hover {
             transform: translateY(-5px);
@@ -87,7 +88,7 @@
         <!-- Live Token Feed -->
         <section class="bg-gray-900 p-6 rounded-lg shadow-lg">
             <h2 class="text-2xl font-semibold text-white mb-4">Recently Launched Tokens</h2>
-            <div id="tokenFeed" class="token-feed grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            <div id="tokenFeed" class="token-feed grid grid-cols-1 gap-4"></div>
         </section>
     </main>
 
@@ -142,6 +143,7 @@
     <script>
         let isLoggedIn = false;
         let balance = 0;
+        let tokenCounter = 0; // Track unique token IDs
         const tokenFeed = document.getElementById('tokenFeed');
         const balanceDisplay = document.getElementById('balance');
         const loginBtn = document.getElementById('loginBtn');
@@ -216,8 +218,10 @@
         function addNewToken() {
             const tokenName = tokenNames[Math.floor(Math.random() * tokenNames.length)];
             const secondsAgo = Math.floor(Math.random() * 60);
+            const tokenId = `token-${tokenCounter++}`; // Unique ID for tracking
             const tokenCard = document.createElement('div');
             tokenCard.className = 'token-card p-4 rounded-lg pop-in';
+            tokenCard.setAttribute('data-id', tokenId); // Add unique ID
             tokenCard.innerHTML = `
                 <p class="text-lg font-semibold text-white">${tokenName}</p>
                 <p class="text-sm text-gray-400">Launched ${secondsAgo} seconds ago</p>
@@ -225,7 +229,7 @@
             `;
             tokenFeed.prepend(tokenCard);
             gsap.from(tokenCard, { scale: 0, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' });
-            console.log(`Added token: ${tokenName}, Total tokens: ${tokenFeed.children.length}`);
+            console.log(`Added token: ${tokenName} (ID: ${tokenId}), Total tokens: ${tokenFeed.children.length}`);
         }
 
         // Add new token every 5 seconds
