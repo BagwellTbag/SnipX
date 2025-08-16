@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solana Token Sniper</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <style>
         body {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -15,7 +14,7 @@
             overflow-x: hidden;
         }
         .token-feed {
-            max-height: 1000px; /* Increased for more tokens */
+            max-height: 1200px; /* Large height for many tokens */
             overflow-y: auto;
             overflow-anchor: none; /* Prevent auto-scroll hiding */
             scrollbar-width: thin;
@@ -35,14 +34,17 @@
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: transform 0.3s ease;
             min-height: 120px; /* Prevent collapse */
+            margin-bottom: 16px; /* Consistent spacing */
             padding: 16px;
-            visibility: visible; /* Ensure not hidden */
+            display: block; /* Ensure visibility */
+            position: static; /* Prevent positioning issues */
+            visibility: visible;
             opacity: 1;
         }
         .token-card:hover {
             transform: translateY(-5px);
+            transition: transform 0.3s ease;
         }
         .pulse {
             animation: pulse 1.5s infinite;
@@ -53,12 +55,11 @@
             100% { transform: scale(1); }
         }
         .pop-in {
-            animation: popIn 0.5s ease-out;
+            animation: fadeIn 0.5s ease-out;
         }
-        @keyframes popIn {
-            0% { transform: scale(0); opacity: 0; }
-            80% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(1); opacity: 1; }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
         }
         .modal {
             background: rgba(0, 0, 0, 0.8);
@@ -92,7 +93,7 @@
         <!-- Live Token Feed -->
         <section class="bg-gray-900 p-6 rounded-lg shadow-lg">
             <h2 class="text-2xl font-semibold text-white mb-4">Recently Launched Tokens</h2>
-            <div id="tokenFeed" class="token-feed flex flex-col gap-4"></div>
+            <div id="tokenFeed" class="token-feed"></div>
         </section>
     </main>
 
@@ -222,25 +223,23 @@
         function addNewToken() {
             const tokenName = tokenNames[Math.floor(Math.random() * tokenNames.length)];
             const secondsAgo = Math.floor(Math.random() * 60);
-            const tokenId = `token-${Date.now()}-${tokenCounter++}`; // Unique ID with timestamp
+            const tokenId = `token-${Date.now()}-${tokenCounter++}`; // Unique ID
             const tokenCard = document.createElement('div');
-            tokenCard.className = 'token-card rounded-lg pop-in';
-            tokenCard.setAttribute('data-id', tokenId); // Add unique ID
+            tokenCard.className = 'token-card pop-in';
+            tokenCard.setAttribute('data-id', tokenId);
             tokenCard.innerHTML = `
                 <p class="text-lg font-semibold text-white">${tokenName}</p>
                 <p class="text-sm text-gray-400">Launched ${secondsAgo} seconds ago</p>
                 <p class="text-sm text-green-400">Sniped at 0.01 SOL</p>
             `;
             tokenFeed.prepend(tokenCard);
-            gsap.from(tokenCard, { scale: 0, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' });
-            console.log(`Added token: ${tokenName} (ID: ${tokenId}), Total tokens: ${tokenFeed.children.length}`);
+            console.log(`Added token: ${tokenName} (ID: ${tokenId}), Total tokens: ${tokenFeed.children.length}, DOM length: ${tokenFeed.innerHTML.length}`);
         }
 
         // Periodic check for token count
         setInterval(() => {
-            console.log(`Current token count: ${tokenFeed.children.length}`);
             const tokenIds = Array.from(tokenFeed.children).map(child => child.getAttribute('data-id'));
-            console.log(`Token IDs in DOM: ${tokenIds.join(', ')}`);
+            console.log(`Current token count: ${tokenFeed.children.length}, Token IDs: ${tokenIds.join(', ')}, DOM length: ${tokenFeed.innerHTML.length}`);
         }, 10000); // Log every 10 seconds
 
         // Add new token every 5 seconds
